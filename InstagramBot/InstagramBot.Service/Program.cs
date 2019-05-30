@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
-using InstagramBot.DB;
+using InstagramApiSharp.API.Builder;
+using InstagramApiSharp.Classes;
+using InstagramApiSharp.Enums;
+using InstagramBot.Service.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
 
 namespace InstagramBot.Service
 {
@@ -11,42 +12,16 @@ namespace InstagramBot.Service
     {
         static void Main(string[] args)
         {
-            using (var context = new ApiContextFactory().CreateDbContext())
+            using (var db = new ApiContextFactory().CreateDbContext())
             {
+                db.Database.Migrate();
 
-                Console.WriteLine(context.Users.FirstOrDefault().Login);
+                var instagramUser = db.InstagramUsers.FirstOrDefaultAsync().Result;
 
+                var instaFactory = new InstaFactory();
+                var s = instaFactory.BuildInstaApi(instagramUser.Login, instagramUser.Password).Result;
             }
             Console.ReadLine();
-        }
-    }
-
-    public class ApiContextFactory : IDesignTimeDbContextFactory<ApiContext>
-    {
-        private static string _connectionString;
-
-        public ApiContext CreateDbContext()
-        {
-            return CreateDbContext(null);
-        }
-
-        public ApiContext CreateDbContext(string[] args)
-        {
-            if (string.IsNullOrEmpty(_connectionString))
-            {
-                LoadConnectionString();
-            }
-
-            var builder = new DbContextOptionsBuilder<ApiContext>();
-            builder.UseSqlServer(_connectionString);
-
-            return new ApiContext(builder.Options);
-        }
-
-        private static void LoadConnectionString()
-        {
-            _connectionString =
-                "Server=(localdb)\\mssqllocaldb; Database=InstagramDB; Trusted_Connection=True; MultipleActiveResultSets=true";
         }
     }
 }

@@ -9,13 +9,17 @@ namespace InstagramBot.DB
     public class ApiContext : DbContext
     {
         public ApiContext(DbContextOptions<ApiContext> options) : base(options) { }
-        public DbSet<User> Users { get; set; }
+        public DbSet<AppUser> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<InstagramUser> InstagramUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
+            modelBuilder.HasDefaultSchema(schema: DbGlobals.SchemaName);
 
-            modelBuilder.Entity<User>().HasData(new User { Id = 1, Login = "Admin", Password = "123456" });
+            modelBuilder.Entity<AppUser>().HasData(new AppUser { Id = 1, Login = "Admin", Password = "123456" });
+            modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710" });
+            modelBuilder.ApplyConfiguration(new User2RolesEntityConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -34,14 +38,14 @@ namespace InstagramBot.DB
 
         private void AddAuditInfo()
         {
-            var entries = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
+            var entries = ChangeTracker.Entries().Where(x => x.Entity is AuditEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
             foreach (var entry in entries)
             {
                 if (entry.State == EntityState.Added)
                 {
-                    ((BaseEntity)entry.Entity).Created = DateTime.UtcNow;
+                    ((AuditEntity)entry.Entity).Created = DateTime.UtcNow;
                 }
-                ((BaseEntity)entry.Entity).Modified = DateTime.UtcNow;
+                ((AuditEntity)entry.Entity).Modified = DateTime.UtcNow;
             }
         }
     }

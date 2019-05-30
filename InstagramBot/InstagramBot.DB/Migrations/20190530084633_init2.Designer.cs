@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InstagramBot.DB.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20190529215427_init")]
-    partial class init
+    [Migration("20190530084633_init2")]
+    partial class init2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Portal")
+                .HasDefaultSchema("dbo")
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -49,6 +49,49 @@ namespace InstagramBot.DB.Migrations
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "123456"
                         });
+                });
+
+            modelBuilder.Entity("InstagramBot.DB.Entities.Role", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime>("Modified");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Role");
+                });
+
+            modelBuilder.Entity("InstagramBot.DB.Entities.User2Roles", b =>
+                {
+                    b.Property<long>("RoleId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("RoleId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("User2Roles");
+                });
+
+            modelBuilder.Entity("InstagramBot.DB.Entities.User2Roles", b =>
+                {
+                    b.HasOne("InstagramBot.DB.Entities.Role", "Role")
+                        .WithMany("User2Roles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("InstagramBot.DB.Entities.AppUser", "User")
+                        .WithMany("User2Roles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

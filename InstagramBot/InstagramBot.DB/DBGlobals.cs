@@ -1,8 +1,7 @@
 ﻿namespace InstagramBot.DB
 {
-    public static class DBGlobals
+    public static class DbGlobals
     {
-        public const string SchemaName = "Portal";
-        public const string ConnectionString = "Portal";
+        public const string SchemaName = "dbo";
     }
 }
