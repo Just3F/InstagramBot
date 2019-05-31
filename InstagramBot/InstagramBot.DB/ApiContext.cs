@@ -10,6 +10,7 @@ namespace InstagramBot.DB
     public class ApiContext : DbContext
     {
         public ApiContext(DbContextOptions<ApiContext> options) : base(options) { }
+        public DbSet<QueueHistory> QueueHistories { get; set; }
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<InstagramUser> InstagramUsers { get; set; }
@@ -21,7 +22,9 @@ namespace InstagramBot.DB
 
             modelBuilder.Entity<AppUser>().HasData(new AppUser { Id = 1, Login = "Admin", Password = "123456", });
             modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710", AppUserId = 1});
-            modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueType = QueueType.InProgress});
+            modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueStatus = QueueStatus.InProgress});
+
+            modelBuilder.ApplyConfiguration(new User2RolesEntityConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
