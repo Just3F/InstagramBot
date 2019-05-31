@@ -2,7 +2,7 @@
 {
     public enum AccountStatus
     {
-        LoggedOff,
-        LoggedIn
+        LoggedOff = 1,
+        LoggedIn = 2
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using InstagramBot.Service.Database;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace InstagramBot.Service
 {
@@ -7,21 +10,21 @@ namespace InstagramBot.Service
     {
         private bool _isEnabled;
 
-        public void Run()
-        {
-            _isEnabled = true;
-        }
-
         public void Stop()
         {
             _isEnabled = false;
         }
 
-        public void Build()
+        public async void Run()
         {
+            Console.WriteLine("Instagram service is started.");
+            _isEnabled = true;
             while (_isEnabled)
             {
-                
+                using (var db = new ApiContextFactory().CreateDbContext())
+                {
+                    var queueItems = await db.QueueItems.Include(x=>x.InstagramUser).ToListAsync();
+                }
             }
 
             Console.WriteLine("Instagram service is stopped.");

@@ -8,5 +8,6 @@ namespace InstagramBot.DB.Entities
         public string Password { get; set; }
 
         public List<User2Roles> User2Roles { get; set; } = new List<User2Roles>();
+        public List<InstagramUser> InstagramUsers { get; set; } = new List<InstagramUser>();
     }
 }

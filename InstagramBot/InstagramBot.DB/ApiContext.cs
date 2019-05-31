@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using InstagramBot.DB.Entities;
+using InstagramBot.DB.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace InstagramBot.DB
@@ -12,14 +13,15 @@ namespace InstagramBot.DB
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<InstagramUser> InstagramUsers { get; set; }
+        public DbSet<QueueItem> QueueItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DbGlobals.SchemaName);
 
-            modelBuilder.Entity<AppUser>().HasData(new AppUser { Id = 1, Login = "Admin", Password = "123456" });
-            modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710" });
-            modelBuilder.ApplyConfiguration(new User2RolesEntityConfiguration());
+            modelBuilder.Entity<AppUser>().HasData(new AppUser { Id = 1, Login = "Admin", Password = "123456", });
+            modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710", AppUserId = 1});
+            modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueType = QueueType.InProgress});
 
             base.OnModelCreating(modelBuilder);
         }

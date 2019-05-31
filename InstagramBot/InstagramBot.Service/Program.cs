@@ -24,7 +24,7 @@ namespace InstagramBot.Service
             //    var s = instaFactory.BuildInstaApi(instagramUser.Login, instagramUser.Password).Result;
             //}
 
-            var instaService = new InstaService().Build();
+            var instaService = new InstaService();
             instaService.Run();
 
             Console.ReadLine();
