@@ -90,6 +90,31 @@ namespace InstagramBot.DB.Migrations
                         });
                 });
 
+            modelBuilder.Entity("InstagramBot.DB.Entities.QueueHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("CreatedById");
+
+                    b.Property<DateTime>("CreatedOn");
+
+                    b.Property<int>("NewQueueStatus");
+
+                    b.Property<int>("OldQueueStatus");
+
+                    b.Property<long>("QueueItemId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("QueueItemId");
+
+                    b.ToTable("QueueHistories");
+                });
+
             modelBuilder.Entity("InstagramBot.DB.Entities.QueueItem", b =>
                 {
                     b.Property<long>("Id")
@@ -119,7 +144,7 @@ namespace InstagramBot.DB.Migrations
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             InstagramUserId = 1L,
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            QueueType = 1
+                            QueueStatus = 1
                         });
                 });
 
@@ -158,7 +183,20 @@ namespace InstagramBot.DB.Migrations
                     b.HasOne("InstagramBot.DB.Entities.AppUser", "AppUser")
                         .WithMany("InstagramUsers")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("InstagramBot.DB.Entities.QueueHistory", b =>
+                {
+                    b.HasOne("InstagramBot.DB.Entities.AppUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("InstagramBot.DB.Entities.QueueItem", "QueueItem")
+                        .WithMany()
+                        .HasForeignKey("QueueItemId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("InstagramBot.DB.Entities.QueueItem", b =>
@@ -166,7 +204,7 @@ namespace InstagramBot.DB.Migrations
                     b.HasOne("InstagramBot.DB.Entities.InstagramUser", "InstagramUser")
                         .WithMany("QueueItems")
                         .HasForeignKey("InstagramUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("InstagramBot.DB.Entities.User2Roles", b =>
@@ -174,12 +212,12 @@ namespace InstagramBot.DB.Migrations
                     b.HasOne("InstagramBot.DB.Entities.Role", "Role")
                         .WithMany("User2Roles")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("InstagramBot.DB.Entities.AppUser", "User")
                         .WithMany("User2Roles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using InstagramApiSharp.API;
 using InstagramBot.DB;
 using InstagramBot.DB.Entities;
+using Newtonsoft.Json;
 
 namespace InstagramBot.Service.Executors
 {
@@ -13,16 +15,15 @@ namespace InstagramBot.Service.Executors
 
         public override async Task Execute(QueueItem queueItem)
         {
-            string tag = queueItem.LoadId;
-            var instaTagFeed = await _instaApi.GetTagFeedAsync(tag, PaginationParameters.MaxPagesToLoad(0));
-            var lastPost = instaTagFeed.Value?.Medias?.FirstOrDefault();
+            var obj = new LikeExecutorParameters{Tag = "test tag name"};
+            var stringObj = JsonConvert.SerializeObject(obj);
 
-            if (instaTagFeed.Succeeded && lastPost != null)
-            {
-                await _instaApi.LikeMediaAsync(lastPost.InstaIdentifier);
-                await UpdateQueueLastActivityAsync(queueEntity, db);
-                Console.WriteLine("LikeExecutor for " + queueEntity.LoginData.Name);
-            }
+           var likeExecutorParameters = JsonConvert.DeserializeObject<LikeExecutorParameters>(stringObj);
         }
+    }
+
+    class LikeExecutorParameters
+    {
+        public string Tag { get; set; }
     }
 }

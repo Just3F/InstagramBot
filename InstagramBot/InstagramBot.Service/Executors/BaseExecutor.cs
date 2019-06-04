@@ -13,7 +13,7 @@ namespace InstagramBot.Service.Executors
 
         public abstract Task Execute(QueueItem queueItem);
 
-        public BaseExecutor(IInstaApi instaApi, ApiContext db)
+        protected BaseExecutor(IInstaApi instaApi, ApiContext db)
         {
             _instaApi = instaApi;
             _db = db;

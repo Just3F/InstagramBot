@@ -24,7 +24,14 @@ namespace InstagramBot.DB
             modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710", AppUserId = 1});
             modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueStatus = QueueStatus.InProgress});
 
+            //modelBuilder.Entity<QueueHistory>().HasOne(x => x.QueueItem).WithMany(x => x.QueueHistories);
+
             modelBuilder.ApplyConfiguration(new User2RolesEntityConfiguration());
+
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
 
             base.OnModelCreating(modelBuilder);
         }
