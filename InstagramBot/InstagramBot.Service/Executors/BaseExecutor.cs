@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using InstagramApiSharp.API;
 using InstagramBot.DB;
 using InstagramBot.DB.Entities;
+using InstagramBot.Service.Models;
 
 namespace InstagramBot.Service.Executors
 {
@@ -11,7 +12,7 @@ namespace InstagramBot.Service.Executors
         protected readonly IInstaApi _instaApi;
         protected readonly ApiContext _db;
 
-        public abstract Task Execute(QueueItem queueItem);
+        public abstract Task<ResultModel> Execute(QueueItem queueItem);
 
         protected BaseExecutor(IInstaApi instaApi, ApiContext db)
         {

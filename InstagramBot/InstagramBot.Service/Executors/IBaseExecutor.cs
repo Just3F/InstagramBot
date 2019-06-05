@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using InstagramBot.DB.Entities;
+using InstagramBot.Service.Models;
 
 namespace InstagramBot.Service.Executors
 {
     interface IBaseExecutor
     {
-        Task Execute(QueueItem queueItem);
+        Task<ResultModel> Execute(QueueItem queueItem);
     }
 }
