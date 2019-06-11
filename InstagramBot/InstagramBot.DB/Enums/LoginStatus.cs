@@ -4,7 +4,7 @@
     {
         UnAuthenticated = 0,
         Authenticated = 1,
-        WaitForCodeChallengeRequired = 3,
-        WaitForPassChallengeRequired = 4,
+        WaitForChallengeRequiredCode = 3,
+        WaitForCheckChallengeRequiredCode = 4,
     }
 }

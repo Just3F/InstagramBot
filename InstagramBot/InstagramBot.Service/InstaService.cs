@@ -31,16 +31,21 @@ namespace InstagramBot.Service
                 {
                     var usersForActivate = await db.InstagramUsers
                         .Where(x => x.QueueItems.Select(z => z.QueueStatus).Contains(QueueStatus.InProgress) &&
-                                    (string.IsNullOrEmpty(x.Session) || x.LoginStatus != LoginStatus.Authenticated))
+                                    ((string.IsNullOrEmpty(x.Session) && x.LoginStatus != LoginStatus.WaitForCheckChallengeRequiredCode && x.LoginStatus != LoginStatus.Authenticated) ||
+                                     (x.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode &&
+                                      !string.IsNullOrEmpty(x.ChallengeRequiredCode))))
                         .ToListAsync();
 
                     foreach (var user in usersForActivate)
                     {
-                        user.
+                        var instaFactory = new InstaFactory();
+                        await instaFactory.SetSession(user);
+                        await db.SaveChangesAsync();
                     }
 
                     var queueItems = await db.QueueItems
                         .Where(x => x.QueueStatus == QueueStatus.InProgress &&
+                                    x.InstagramUser.LoginStatus == LoginStatus.Authenticated &&
                                     x.Modified < DateTime.UtcNow - TimeSpan.FromSeconds(x.DelayInSeconds))
                         .Include(x => x.InstagramUser).ToListAsync();
 
@@ -71,7 +76,7 @@ namespace InstagramBot.Service
                     executor = new LikeExecutor(instaApi, db);
                     break;
             }
-            
+
             return executor;
         }
     }

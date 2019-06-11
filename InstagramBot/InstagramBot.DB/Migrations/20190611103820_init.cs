@@ -57,7 +57,8 @@ namespace InstagramBot.DB.Migrations
                     Login = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     Session = table.Column<string>(nullable: true),
-                    AccountStatus = table.Column<int>(nullable: false),
+                    LoginStatus = table.Column<int>(nullable: false),
+                    ChallengeRequiredCode = table.Column<string>(nullable: true),
                     AppUserId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
@@ -167,14 +168,14 @@ namespace InstagramBot.DB.Migrations
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "InstagramUsers",
-                columns: new[] { "Id", "AccountStatus", "AppUserId", "Created", "Login", "Modified", "Name", "Password", "Session" },
-                values: new object[] { 1L, 0, 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "belarus.here", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Gfhjkm63934710", null });
+                columns: new[] { "Id", "AppUserId", "ChallengeRequiredCode", "Created", "Login", "LoginStatus", "Modified", "Name", "Password", "Session" },
+                values: new object[] { 1L, 1L, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "belarus.here", 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Gfhjkm63934710", null });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "QueueItems",
                 columns: new[] { "Id", "Created", "DelayInSeconds", "InstagramUserId", "Modified", "Parameters", "QueueStatus", "QueueType" },
-                values: new object[] { 1L, new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9240), 100, 1L, new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9989), "{\"Tag\":\"Minsk\"}", 1, 0 });
+                values: new object[] { 1L, new DateTime(2019, 6, 11, 10, 38, 19, 945, DateTimeKind.Utc).AddTicks(4794), 100, 1L, new DateTime(2019, 6, 11, 10, 38, 19, 945, DateTimeKind.Utc).AddTicks(5376), "{\"Tag\":\"Minsk\"}", 1, 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InstagramUsers_AppUserId",

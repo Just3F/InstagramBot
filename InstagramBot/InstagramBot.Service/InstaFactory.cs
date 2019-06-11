@@ -15,10 +15,9 @@ namespace InstagramBot.Service
     {
         IInstaApi _instaApi;
 
-        public async Task<bool> LoginAsync(InstagramUser user)
+        public async Task<string> SetSession(InstagramUser user)
         {
             _instaApi = BuildApi(user.Login, user.Password);
-
             try
             {
                 _instaApi.LoadStateDataFromString(user.Session);
@@ -28,12 +27,47 @@ namespace InstagramBot.Service
                 Console.WriteLine(e);
             }
 
-            if (!_instaApi.IsUserAuthenticated)
+            if (user.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode)
             {
-
+                var verifyResult = await _instaApi.VerifyCodeForChallengeRequireAsync(user.ChallengeRequiredCode);
+                if (verifyResult.Succeeded)
+                {
+                    user.LoginStatus = LoginStatus.Authenticated;
+                    user.Session = _instaApi.GetStateDataAsString();
+                    return user.Session;
+                }
             }
 
-            return true;
+            if (!_instaApi.IsUserAuthenticated)
+            {
+                var logInResult = await _instaApi.LoginAsync();
+                if (!logInResult.Succeeded)
+                {
+                    if (logInResult.Value == InstaLoginResult.ChallengeRequired)
+                    {
+                        var challenge = await _instaApi.GetChallengeRequireVerifyMethodAsync();
+                        if (challenge.Succeeded)
+                        {
+                            //challenge.Value.
+                            var email = await _instaApi.RequestVerifyCodeToSMSForChallengeRequireAsync(replayChallenge: true);
+                            if (email.Succeeded)
+                            {
+                                user.LoginStatus = LoginStatus.WaitForCheckChallengeRequiredCode;
+                                user.ChallengeRequiredCode = string.Empty;
+                                return string.Empty;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    user.LoginStatus = LoginStatus.Authenticated;
+                    user.Session = _instaApi.GetStateDataAsString();
+                    return user.Session;
+                }
+            }
+
+            return string.Empty;
         }
 
         public async Task<IInstaApi> BuildInstaApi(string login, string password)
@@ -67,7 +101,7 @@ namespace InstagramBot.Service
                             var email = await _instaApi.RequestVerifyCodeToEmailForChallengeRequireAsync(replayChallenge: true);
                             if (email.Succeeded)
                             {
-                                instagramUser.LoginStatus = LoginStatus.WaitForCodeChallengeRequired;
+                                instagramUser.LoginStatus = LoginStatus.WaitForChallengeRequiredCode;
                                 //var verifyLogin = await _instaApi.VerifyCodeForChallengeRequireAsync("CODE");
                             }
                         }

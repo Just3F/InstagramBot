@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InstagramBot.DB.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20190611075509_init")]
+    [Migration("20190611103820_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,13 +57,15 @@ namespace InstagramBot.DB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountStatus");
-
                     b.Property<long>("AppUserId");
+
+                    b.Property<string>("ChallengeRequiredCode");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Login");
+
+                    b.Property<int>("LoginStatus");
 
                     b.Property<DateTime>("Modified");
 
@@ -83,10 +85,10 @@ namespace InstagramBot.DB.Migrations
                         new
                         {
                             Id = 1L,
-                            AccountStatus = 0,
                             AppUserId = 1L,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Login = "belarus.here",
+                            LoginStatus = 0,
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "Gfhjkm63934710"
                         });
@@ -147,10 +149,10 @@ namespace InstagramBot.DB.Migrations
                         new
                         {
                             Id = 1L,
-                            Created = new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9240),
+                            Created = new DateTime(2019, 6, 11, 10, 38, 19, 945, DateTimeKind.Utc).AddTicks(4794),
                             DelayInSeconds = 100,
                             InstagramUserId = 1L,
-                            Modified = new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9989),
+                            Modified = new DateTime(2019, 6, 11, 10, 38, 19, 945, DateTimeKind.Utc).AddTicks(5376),
                             Parameters = "{\"Tag\":\"Minsk\"}",
                             QueueStatus = 1,
                             QueueType = 0
