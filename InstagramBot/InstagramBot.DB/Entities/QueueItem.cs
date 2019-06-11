@@ -8,6 +8,8 @@ namespace InstagramBot.DB.Entities
     {
         public string Parameters { get; set; }
         public QueueStatus QueueStatus { get; set; }
+        public QueueType QueueType { get; set; }
+        public int DelayInSeconds { get; set; }
 
         public long InstagramUserId { get; set; }
         [ForeignKey("InstagramUserId")]

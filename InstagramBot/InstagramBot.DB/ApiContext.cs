@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using InstagramBot.DB.Entities;
 using InstagramBot.DB.Enums;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace InstagramBot.DB
 {
@@ -21,10 +22,8 @@ namespace InstagramBot.DB
             modelBuilder.HasDefaultSchema(schema: DbGlobals.SchemaName);
 
             modelBuilder.Entity<AppUser>().HasData(new AppUser { Id = 1, Login = "Admin", Password = "123456", });
-            modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710", AppUserId = 1});
-            modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueStatus = QueueStatus.InProgress});
-
-            //modelBuilder.Entity<QueueHistory>().HasOne(x => x.QueueItem).WithMany(x => x.QueueHistories);
+            modelBuilder.Entity<InstagramUser>().HasData(new InstagramUser { Id = 1, Login = "belarus.here", Password = "Gfhjkm63934710", AppUserId = 1 });
+            modelBuilder.Entity<QueueItem>().HasData(new QueueItem { Id = 1, InstagramUserId = 1, QueueStatus = QueueStatus.InProgress, QueueType = QueueType.Like, Created = DateTime.UtcNow, Modified = DateTime.UtcNow, DelayInSeconds = 100, Parameters = JsonConvert.SerializeObject(new LikeExecutorParameters { Tag = "Minsk" }) });
 
             modelBuilder.ApplyConfiguration(new User2RolesEntityConfiguration());
 
@@ -34,6 +33,11 @@ namespace InstagramBot.DB
             }
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        private class LikeExecutorParameters
+        {
+            public string Tag { get; set; }
         }
 
         public override int SaveChanges()

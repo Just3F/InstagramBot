@@ -42,9 +42,4 @@ namespace InstagramBot.Service.Executors
             return result.Success(nameof(LikeExecutor));
         }
     }
-
-    class LikeExecutorParameters
-    {
-        public string Tag { get; set; }
-    }
 }

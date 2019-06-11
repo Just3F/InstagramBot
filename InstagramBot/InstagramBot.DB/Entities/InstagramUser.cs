@@ -12,7 +12,7 @@ namespace InstagramBot.DB.Entities
         public string Login { get; set; }
         public string Password { get; set; }
         public string Session { get; set; }
-        public AccountStatus AccountStatus { get; set; }
+        public LoginStatus LoginStatus { get; set; }
 
         public long AppUserId { get; set; }
         [ForeignKey("AppUserId")]

@@ -4,6 +4,8 @@ using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Logger;
+using InstagramBot.DB.Entities;
+using InstagramBot.DB.Enums;
 using InstagramBot.Service.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,27 @@ namespace InstagramBot.Service
     public class InstaFactory
     {
         IInstaApi _instaApi;
+
+        public async Task<bool> LoginAsync(InstagramUser user)
+        {
+            _instaApi = BuildApi(user.Login, user.Password);
+
+            try
+            {
+                _instaApi.LoadStateDataFromString(user.Session);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            if (!_instaApi.IsUserAuthenticated)
+            {
+
+            }
+
+            return true;
+        }
 
         public async Task<IInstaApi> BuildInstaApi(string login, string password)
         {
@@ -35,8 +58,21 @@ namespace InstagramBot.Service
                     // login
                     Console.WriteLine($"Logging in as {login}");
                     var logInResult = await _instaApi.LoginAsync();
-                    if (!logInResult.Succeeded)
+                    if (!logInResult.Succeeded && logInResult.Value == InstaLoginResult.ChallengeRequired)
                     {
+                        var challenge = await _instaApi.GetChallengeRequireVerifyMethodAsync();
+                        if (challenge.Succeeded)
+                        {
+                            //challenge.Value.
+                            var email = await _instaApi.RequestVerifyCodeToEmailForChallengeRequireAsync(replayChallenge: true);
+                            if (email.Succeeded)
+                            {
+                                instagramUser.LoginStatus = LoginStatus.WaitForCodeChallengeRequired;
+                                //var verifyLogin = await _instaApi.VerifyCodeForChallengeRequireAsync("CODE");
+                            }
+                        }
+
+
                         Console.WriteLine($"Unable to login: {logInResult.Info.Message}");
                         return null;
                     }
@@ -49,6 +85,14 @@ namespace InstagramBot.Service
             return _instaApi;
         }
 
+        void SaveSession()
+        {
+            if (_instaApi == null)
+                return;
+            if (!_instaApi.IsUserAuthenticated)
+                return;
+            _instaApi.SessionHandler.Save();
+        }
 
         IInstaApi BuildApi(string login, string password)
         {

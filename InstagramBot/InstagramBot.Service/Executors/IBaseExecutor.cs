@@ -6,6 +6,6 @@ namespace InstagramBot.Service.Executors
 {
     interface IBaseExecutor
     {
-        Task<ResultModel> Execute(QueueItem queueItem);
+        Task<ResultModel> Run(QueueItem queueItem);
     }
 }

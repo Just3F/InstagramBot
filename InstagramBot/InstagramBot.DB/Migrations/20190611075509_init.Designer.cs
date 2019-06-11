@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InstagramBot.DB.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20190604105342_init")]
+    [Migration("20190611075509_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,6 +125,8 @@ namespace InstagramBot.DB.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<int>("DelayInSeconds");
+
                     b.Property<long>("InstagramUserId");
 
                     b.Property<DateTime>("Modified");
@@ -132,6 +134,8 @@ namespace InstagramBot.DB.Migrations
                     b.Property<string>("Parameters");
 
                     b.Property<int>("QueueStatus");
+
+                    b.Property<int>("QueueType");
 
                     b.HasKey("Id");
 
@@ -143,10 +147,13 @@ namespace InstagramBot.DB.Migrations
                         new
                         {
                             Id = 1L,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9240),
+                            DelayInSeconds = 100,
                             InstagramUserId = 1L,
-                            Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            QueueStatus = 1
+                            Modified = new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9989),
+                            Parameters = "{\"Tag\":\"Minsk\"}",
+                            QueueStatus = 1,
+                            QueueType = 0
                         });
                 });
 

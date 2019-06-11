@@ -110,6 +110,8 @@ namespace InstagramBot.DB.Migrations
                     Modified = table.Column<DateTime>(nullable: false),
                     Parameters = table.Column<string>(nullable: true),
                     QueueStatus = table.Column<int>(nullable: false),
+                    QueueType = table.Column<int>(nullable: false),
+                    DelayInSeconds = table.Column<int>(nullable: false),
                     InstagramUserId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
@@ -171,8 +173,8 @@ namespace InstagramBot.DB.Migrations
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "QueueItems",
-                columns: new[] { "Id", "Created", "InstagramUserId", "Modified", "Parameters", "QueueStatus" },
-                values: new object[] { 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 1 });
+                columns: new[] { "Id", "Created", "DelayInSeconds", "InstagramUserId", "Modified", "Parameters", "QueueStatus", "QueueType" },
+                values: new object[] { 1L, new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9240), 100, 1L, new DateTime(2019, 6, 11, 7, 55, 8, 500, DateTimeKind.Utc).AddTicks(9989), "{\"Tag\":\"Minsk\"}", 1, 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InstagramUsers_AppUserId",
