@@ -29,6 +29,7 @@ namespace InstagramBot.Service
 
             if (user.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode)
             {
+                var logInResult = await _instaApi.LoginAsync();
                 var verifyResult = await _instaApi.VerifyCodeForChallengeRequireAsync(user.ChallengeRequiredCode);
                 if (verifyResult.Succeeded)
                 {
@@ -49,11 +50,12 @@ namespace InstagramBot.Service
                         if (challenge.Succeeded)
                         {
                             //challenge.Value.
-                            var email = await _instaApi.RequestVerifyCodeToSMSForChallengeRequireAsync(replayChallenge: true);
+                            var email = await _instaApi.RequestVerifyCodeToSMSForChallengeRequireAsync();
                             if (email.Succeeded)
                             {
                                 user.LoginStatus = LoginStatus.WaitForCheckChallengeRequiredCode;
                                 user.ChallengeRequiredCode = string.Empty;
+                                user.Session = _instaApi.GetStateDataAsString();
                                 return string.Empty;
                             }
                         }
@@ -89,29 +91,7 @@ namespace InstagramBot.Service
 
                 if (!_instaApi.IsUserAuthenticated)
                 {
-                    // login
-                    Console.WriteLine($"Logging in as {login}");
-                    var logInResult = await _instaApi.LoginAsync();
-                    if (!logInResult.Succeeded && logInResult.Value == InstaLoginResult.ChallengeRequired)
-                    {
-                        var challenge = await _instaApi.GetChallengeRequireVerifyMethodAsync();
-                        if (challenge.Succeeded)
-                        {
-                            //challenge.Value.
-                            var email = await _instaApi.RequestVerifyCodeToEmailForChallengeRequireAsync(replayChallenge: true);
-                            if (email.Succeeded)
-                            {
-                                instagramUser.LoginStatus = LoginStatus.WaitForChallengeRequiredCode;
-                                //var verifyLogin = await _instaApi.VerifyCodeForChallengeRequireAsync("CODE");
-                            }
-                        }
-
-
-                        Console.WriteLine($"Unable to login: {logInResult.Info.Message}");
-                        return null;
-                    }
-
-                    instagramUser.Session = _instaApi.GetStateDataAsString();
+                    instagramUser.LoginStatus = LoginStatus.UnAuthenticated;
                     await db.SaveChangesAsync();
                 }
             }
@@ -132,7 +112,7 @@ namespace InstagramBot.Service
         {
             return InstaApiBuilder.CreateBuilder()
                 .SetUser(UserSessionData.ForUsername(login).WithPassword(password))
-                .UseLogger(new DebugLogger(LogLevel.All))
+                .UseLogger(new DebugLogger(LogLevel.Exceptions))
                 .SetRequestDelay(RequestDelay.FromSeconds(0, 1))
                 // Session handler, set a file path to save/load your state/session data
                 //.SetSessionHandler(new FileSessionHandler() { FilePath = StateFile })

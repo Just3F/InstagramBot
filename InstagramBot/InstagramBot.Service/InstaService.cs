@@ -56,7 +56,8 @@ namespace InstagramBot.Service
                         var instaApi = await instaFactory.BuildInstaApi(instaUser.Login, instaUser.Password);
 
                         var executor = GetBaseExecutor(queueItem, instaApi, db);
-                        await executor.Run(queueItem);
+                        var result = await executor.Run(queueItem);
+                        Console.WriteLine(result.Message);
                     }
                 }
             }
