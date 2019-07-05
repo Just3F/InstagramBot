@@ -25,6 +25,8 @@ namespace InstagramBot.Service.Executors
             var instaTagFeed = await _instaApi.FeedProcessor.GetTagFeedAsync(likeExecutorParameters.Tag, PaginationParameters.MaxPagesToLoad(0));
             if (!instaTagFeed.Succeeded)
             {
+                var s = await _instaApi.RequestVerifyCodeToSMSForChallengeRequireAsync();
+                var ss = await _instaApi.VerifyCodeForChallengeRequireAsync("");
                 return result.Fail($"Cannot load instagram feed in {nameof(LikeExecutor)}");
             }
             var lastPost = instaTagFeed.Value?.Medias?.FirstOrDefault(x => !x.HasLiked);

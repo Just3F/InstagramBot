@@ -29,19 +29,7 @@ namespace InstagramBot.Service
             {
                 using (var db = new ApiContextFactory().CreateDbContext())
                 {
-                    var usersForActivate = await db.InstagramUsers
-                        .Where(x => x.QueueItems.Select(z => z.QueueStatus).Contains(QueueStatus.InProgress) &&
-                                    ((string.IsNullOrEmpty(x.Session) && x.LoginStatus != LoginStatus.WaitForCheckChallengeRequiredCode && x.LoginStatus != LoginStatus.Authenticated) ||
-                                     (x.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode &&
-                                      !string.IsNullOrEmpty(x.ChallengeRequiredCode))))
-                        .ToListAsync();
-
-                    foreach (var user in usersForActivate)
-                    {
-                        var instaFactory = new InstaFactory();
-                        await instaFactory.SetSession(user);
-                        await db.SaveChangesAsync();
-                    }
+                    await ActivateInstagramUsers(db);
 
                     var queueItems = await db.QueueItems
                         .Where(x => x.QueueStatus == QueueStatus.InProgress &&
@@ -63,6 +51,25 @@ namespace InstagramBot.Service
             }
 
             Console.WriteLine("Instagram service is stopped.");
+        }
+
+        private static async Task ActivateInstagramUsers(ApiContext db)
+        {
+            var usersForActivate = await db.InstagramUsers
+                .Where(x => x.QueueItems.Select(z => z.QueueStatus).Contains(QueueStatus.InProgress) &&
+                            ((string.IsNullOrEmpty(x.Session) &&
+                              x.LoginStatus != LoginStatus.WaitForCheckChallengeRequiredCode &&
+                              x.LoginStatus != LoginStatus.Authenticated) ||
+                             (x.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode &&
+                              !string.IsNullOrEmpty(x.ChallengeRequiredCode))))
+                .ToListAsync();
+
+            foreach (var user in usersForActivate)
+            {
+                var instaFactory = new InstaFactory();
+                await instaFactory.SetSession(user);
+                await db.SaveChangesAsync();
+            }
         }
 
         private IBaseExecutor GetBaseExecutor(QueueItem queueItem, IInstaApi instaApi, ApiContext db)

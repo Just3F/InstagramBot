@@ -89,6 +89,7 @@ namespace InstagramBot.Service
                     Console.WriteLine(e);
                 }
 
+                //await _instaApi.LoginAsync();
                 if (!_instaApi.IsUserAuthenticated)
                 {
                     instagramUser.LoginStatus = LoginStatus.UnAuthenticated;
