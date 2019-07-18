@@ -41,7 +41,10 @@ namespace InstagramBot.Service
                         var instaFactory = new InstaFactory();
                         var instaApi = await instaFactory.BuildInstaApi(instaUser.Login, instaUser.Password);
                         if (instaApi == null)
+                        {
+                            queueItem.QueueStatus = QueueStatus.Stopped;
                             break;
+                        }
 
                         var executor = GetBaseExecutor(queueItem, instaApi, db);
                         var result = await executor.Run(queueItem);
