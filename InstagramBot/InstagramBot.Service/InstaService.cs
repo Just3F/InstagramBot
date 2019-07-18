@@ -31,17 +31,17 @@ namespace InstagramBot.Service
                 {
                     await ActivateInstagramUsers(db);
 
-                    var queueItems = await db.QueueItems
-                        .Where(x => x.QueueStatus == QueueStatus.InProgress &&
-                                    x.InstagramUser.LoginStatus == LoginStatus.Authenticated &&
-                                    x.Modified < DateTime.UtcNow - TimeSpan.FromSeconds(x.DelayInSeconds))
+                    var activeQueueItems = await db.QueueItems
+                        .Where(x => IsQueueItemActive(x))
                         .Include(x => x.InstagramUser).ToListAsync();
 
-                    foreach (var queueItem in queueItems)
+                    foreach (var queueItem in activeQueueItems)
                     {
                         var instaUser = queueItem.InstagramUser;
                         var instaFactory = new InstaFactory();
                         var instaApi = await instaFactory.BuildInstaApi(instaUser.Login, instaUser.Password);
+                        if (instaApi == null)
+                            break;
 
                         var executor = GetBaseExecutor(queueItem, instaApi, db);
                         var result = await executor.Run(queueItem);
@@ -53,15 +53,17 @@ namespace InstagramBot.Service
             Console.WriteLine("Instagram service is stopped.");
         }
 
+        private static bool IsQueueItemActive(QueueItem x)
+        {
+            return x.QueueStatus == QueueStatus.InProgress &&
+                   x.InstagramUser.LoginStatus == LoginStatus.Authenticated &&
+                   x.Modified < DateTime.UtcNow - TimeSpan.FromSeconds(x.DelayInSeconds);
+        }
+
         private static async Task ActivateInstagramUsers(ApiContext db)
         {
             var usersForActivate = await db.InstagramUsers
-                .Where(x => x.QueueItems.Select(z => z.QueueStatus).Contains(QueueStatus.InProgress) &&
-                            ((string.IsNullOrEmpty(x.Session) &&
-                              x.LoginStatus != LoginStatus.WaitForCheckChallengeRequiredCode &&
-                              x.LoginStatus != LoginStatus.Authenticated) ||
-                             (x.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode &&
-                              !string.IsNullOrEmpty(x.ChallengeRequiredCode))))
+                .Where(x => IsInstaUserNeedToBeActivated(x))
                 .ToListAsync();
 
             foreach (var user in usersForActivate)
@@ -70,6 +72,16 @@ namespace InstagramBot.Service
                 await instaFactory.SetSession(user);
                 await db.SaveChangesAsync();
             }
+        }
+
+        private static bool IsInstaUserNeedToBeActivated(InstagramUser x)
+        {
+            return x.QueueItems.Select(z => z.QueueStatus).Contains(QueueStatus.InProgress) &&
+                   ((string.IsNullOrEmpty(x.Session) &&
+                     x.LoginStatus != LoginStatus.WaitForCheckChallengeRequiredCode &&
+                     x.LoginStatus != LoginStatus.Authenticated) ||
+                    (x.LoginStatus == LoginStatus.WaitForCheckChallengeRequiredCode &&
+                     !string.IsNullOrEmpty(x.ChallengeRequiredCode)));
         }
 
         private IBaseExecutor GetBaseExecutor(QueueItem queueItem, IInstaApi instaApi, ApiContext db)

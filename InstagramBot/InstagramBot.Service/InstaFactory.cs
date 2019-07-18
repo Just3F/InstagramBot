@@ -94,6 +94,7 @@ namespace InstagramBot.Service
                 {
                     instagramUser.LoginStatus = LoginStatus.UnAuthenticated;
                     await db.SaveChangesAsync();
+                    return null;
                 }
             }
 
