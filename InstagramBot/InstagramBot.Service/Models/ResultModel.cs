@@ -1,27 +1,27 @@
-﻿namespace InstagramBot.Service.Models
+﻿using InstagramBot.DB.Enums;
+
+namespace InstagramBot.Service.Models
 {
     public class ResultModel
     {
-        public Result Result { get; set; }
+        public QueueResult Result { get; set; }
         public string Message { get; set; }
+        public string WorkedWithObjectId { get; set; }
 
         public ResultModel Fail(string message)
         {
-            Result = Result.Failed;
+            Result = QueueResult.Failed;
             Message = message;
             return this;
         }
-        public ResultModel Success(string message)
+        public ResultModel Success(string message, string workedWithObjectId)
         {
-            Result = Result.Success;
+            Result = QueueResult.Success;
             Message = message;
+            WorkedWithObjectId = workedWithObjectId;
             return this;
         }
     }
 
-    public enum Result
-    {
-        Success = 0,
-        Failed = 1
-    }
+    
 }

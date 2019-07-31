@@ -6,9 +6,9 @@ namespace InstagramBot.DB.Entities
 {
     public class QueueHistory : BaseEntity
     {
-        public QueueStatus OldQueueStatus { get; set; }
-        public QueueStatus NewQueueStatus { get; set; }
+        public QueueResult Result { get; set; }
         public DateTime CreatedOn { get; set; }
+        public string WorkedWithObjectId { get; set; }
 
         public long QueueItemId { get; set; }
         [ForeignKey("QueueItemId")]

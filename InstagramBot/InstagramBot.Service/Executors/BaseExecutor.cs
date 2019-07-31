@@ -23,16 +23,21 @@ namespace InstagramBot.Service.Executors
         public async Task<ResultModel> Run(QueueItem queueItem)
         {
             var result = await Execute(queueItem);
-            await AddHistory(queueItem);
+            await AddHistory(queueItem, result);
             return result;
         }
 
-
-        public virtual async Task AddHistory(QueueItem queueItem)
+        public virtual async Task AddHistory(QueueItem queueItem, ResultModel result)
         {
-            //TODO created by id need to set 
             queueItem.Modified = DateTime.UtcNow;
-            await _db.QueueHistories.AddAsync(new QueueHistory { QueueItemId = queueItem.Id, CreatedById = 1, CreatedOn = DateTime.UtcNow });
+            await _db.QueueHistories.AddAsync(new QueueHistory
+            {
+                QueueItemId = queueItem.Id,
+                CreatedById = 1,
+                CreatedOn = DateTime.UtcNow,
+                WorkedWithObjectId = result.WorkedWithObjectId,
+                Result = result.Result
+            });
             await _db.SaveChangesAsync();
         }
     }

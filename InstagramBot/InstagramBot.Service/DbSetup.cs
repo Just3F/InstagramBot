@@ -31,14 +31,29 @@ namespace InstagramBot.Service
                     await db.SaveChangesAsync();
                 }
 
-                await CreateInstaUserWithTasksIfNotExist(db, adminUser.Id, "1Travel_Around_The_World", "Gfhjkm63934710", "Travel");
+                await CreateLikeInstaUserWithTasksIfNotExist(db, adminUser.Id, "1Travel_Around_The_World",
+                    "Gfhjkm63934710", "Travel",
+                    new List<string>()
+                    {
+                        "desartarch", "traveltherestoftheworld", "sardapp", "mygreekportfolio",
+                        "europetraveldestinations", "living_europeofficial", "kayvanhuisseling", "tiffpenguin",
+                        "choosemiami"
+                    }, false);
+
+                await CreateLikeInstaUserWithTasksIfNotExist(db, adminUser.Id, "Belarus.here", "Gfhjkm63934710",
+                    "Minsk",
+                    new List<string>()
+                    {
+                        "brestgood", "thismyminsk", "lovely_belarus", "ourbelarusby", "B0kedghoz67", "imagerb",
+                        "bel.vovasha"
+                    }, true);
             }
         }
 
-        private static async Task CreateInstaUserWithTasksIfNotExist(ApiContext db, long adminUserId, string login, string password, string tag)
+        private static async Task CreateLikeInstaUserWithTasksIfNotExist(ApiContext db, long adminUserId, string login, string password, string tag, List<string> groupNames, bool isShowAuthor)
         {
             var instaUser1 =
-                await db.InstagramUsers.FirstOrDefaultAsync(x => x.Login == "1Travel_Around_The_World");
+                await db.InstagramUsers.FirstOrDefaultAsync(x => x.Login == login);
             if (instaUser1 == null)
             {
                 instaUser1 = new InstagramUser
@@ -52,14 +67,21 @@ namespace InstagramBot.Service
                     {
                         new QueueItem
                         {
-                            Id = 1,
-                            InstagramUserId = 1,
                             QueueStatus = QueueStatus.InProgress,
                             QueueType = QueueType.Like,
                             Created = DateTime.UtcNow,
                             Modified = DateTime.UtcNow - TimeSpan.FromSeconds(100),
                             DelayInSeconds = 100,
                             Parameters = JsonConvert.SerializeObject(new LikeExecutorParameters {Tag = tag})
+                        },
+                        new QueueItem
+                        {
+                            QueueStatus = QueueStatus.InProgress,
+                            QueueType = QueueType.PostMedia,
+                            Created = DateTime.UtcNow,
+                            Modified = DateTime.UtcNow - TimeSpan.FromSeconds(100),
+                            DelayInSeconds = 7200,
+                            Parameters = JsonConvert.SerializeObject(new PostMediaParameters {GroupNames = groupNames, IsShowAuthor = false})
                         }
                     }
                 };

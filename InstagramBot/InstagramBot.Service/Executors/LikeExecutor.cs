@@ -33,13 +33,14 @@ namespace InstagramBot.Service.Executors
                 return result.Fail($"Cannot find post(has no liked) in {nameof(LikeExecutor)}");
             }
 
-            var likeResult = await _instaApi.MediaProcessor.LikeMediaAsync(lastPost.InstaIdentifier);
+            var likedObjectId = lastPost.InstaIdentifier;
+            var likeResult = await _instaApi.MediaProcessor.LikeMediaAsync(likedObjectId);
             if (!likeResult.Succeeded)
             {
                 return result.Fail($"Cannot like post {nameof(LikeExecutor)}");
             }
 
-            return result.Success(nameof(LikeExecutor));
+            return result.Success(nameof(LikeExecutor), likedObjectId);
         }
     }
 }

@@ -1,28 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Enums;
-using InstagramBot.Service.Database;
-using Microsoft.EntityFrameworkCore;
 
 namespace InstagramBot.Service
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            //using (var db = new ApiContextFactory().CreateDbContext())
-            //{
-            //    db.Database.Migrate();
-
-            //    var instagramUser = db.InstagramUsers.FirstOrDefaultAsync().Result;
-
-            //    var instaFactory = new InstaFactory();
-            //    var s = instaFactory.BuildInstaApi(instagramUser.Login, instagramUser.Password).Result;
-            //}
+            DbSetup dbSetup = new DbSetup();
+            dbSetup.Run().GetAwaiter();
 
             var instaService = new InstaService();
             instaService.Run();
